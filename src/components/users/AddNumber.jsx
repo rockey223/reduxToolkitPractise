@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { getComment, getPhone } from "../../store/slices/userSlice";
+import { getComment } from "../../store/slices/userSlice";
 import { Get } from "../../fetch";
 const AddNumber = () => {
   const dispatch = useDispatch();

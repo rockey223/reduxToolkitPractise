@@ -6,10 +6,9 @@ import { useSelector } from "react-redux";
 import AddName from "./components/users/AddName";
 import AddNumber from "./components/users/AddNumber";
 import AddUserList from "./components/users/AddUserList";
+import Display from "./components/numbers/Display";
 function App() {
-  const number = useSelector((state) => {
-    return state.number;
-  });
+
   const user = useSelector((state) => {
     return state.user;
   });
@@ -22,7 +21,7 @@ function App() {
         toolkit
       </h3>
       <IncreaseNumber />
-      <span>{number}</span>
+      <Display/>
       <DecreaseNumber />
       <hr />
       <ResetNumber />

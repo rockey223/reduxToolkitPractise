@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { addUser, getUser } from "../../store/slices/userSlice";
+import { addUser } from "../../store/slices/userSlice";
 
 import { Post } from "../../fetch";
 const AddName = () => {
