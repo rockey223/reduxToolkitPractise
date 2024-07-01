@@ -17,6 +17,7 @@ const productSlice = createSlice({
     allProducts: [],
     category: [],
     highestPrice: 0,
+    sorting: "ascending",
     filterProducts: {
       search: "",
       price: 0,
@@ -26,24 +27,21 @@ const productSlice = createSlice({
   },
   reducers: {
     update_filter(state, action) {
-      if (action.payload.category) {
-        state.filterProducts.category = action.payload.category;
-      }
-      if (action.payload.price) {
-        state.filterProducts.price = action.payload.price;
-      }
+      const { name, value } = action.payload;
 
-      if (action.payload.search) {
-        state.filterProducts.search = action.payload.search;
-      }
+      state.filterProducts = {
+        ...state.filterProducts,
+        [name]: value,
+      };
 
       productSlice.caseReducers.filter_products(state);
+      productSlice.caseReducers.sorting(state);
     },
 
     filter_products(state) {
       const { search, price, category } = state.filterProducts;
-      let tempFilter = state.allProducts;
-      if (search !== "") {
+      let tempFilter = [...state.allProducts];
+      if (search) {
         tempFilter = tempFilter.filter((product) => {
           return product.title.toLowerCase().includes(search);
         });
@@ -60,6 +58,35 @@ const productSlice = createSlice({
         tempFilter = tempFilter.filter((product) => product.price <= price);
       }
       state.filteredProduct = tempFilter;
+    },
+
+    update_sorting(state, action) {
+      state.sorting = action.payload;
+      productSlice.caseReducers.sorting(state);
+    },
+
+    sorting(state) {
+      let sortedData;
+      const { filteredProduct, sorting } = state;
+      let tempSort = [...filteredProduct];
+
+      const sortingProducts = (a, b) => {
+        if (sorting === "ascending") {
+          return a.title.localeCompare(b.title);
+        }
+        if (sorting === "descending") {
+          return b.title.localeCompare(a.title);
+        }
+        if (sorting === "lowest") {
+          return a.price - b.price;
+        }
+        if (sorting === "highest") {
+          return b.price - a.price;
+        }
+      };
+      sortedData = tempSort.sort(sortingProducts);
+
+      state.filteredProduct = sortedData;
     },
   },
   extraReducers: (builder) => {
@@ -82,6 +109,7 @@ const productSlice = createSlice({
         );
         state.highestPrice = maxPrice;
         state.filterProducts.price = maxPrice;
+        productSlice.caseReducers.sorting(state);
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = "failed";
@@ -91,4 +119,5 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
-export const { filter_products, update_filter } = productSlice.actions;
+export const { filter_products, update_filter, update_sorting } =
+  productSlice.actions;

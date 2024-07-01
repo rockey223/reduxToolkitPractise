@@ -143,8 +143,8 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchProducts,
-  filter_products,
   update_filter,
+  update_sorting
 } from "./store/slices/ProductSlice";
 
 const App = () => {
@@ -161,26 +161,23 @@ const App = () => {
   );
   useEffect(() => {
     if (productStatus === "idle") {
-      dispatch(fetchProducts());
+      dispatch(fetchProducts(),update_sorting('ascending'));
     }
   }, [productStatus, dispatch]);
 
-  if(productStatus=== 'loading'){
-    return(
+  if (productStatus === "loading") {
+    return (
       <>
-      <h1>loading</h1>
+        <h1>loading</h1>
       </>
-    )
-  }
-  else if(productStatus === 'failed'){
-    return(
+    );
+  } else if (productStatus === "failed") {
+    return (
       <>
-      <h1>{productError}</h1>
+        <h1>{productError}</h1>
       </>
-    )
-
+    );
   }
-
 
   return (
     <>
@@ -188,7 +185,8 @@ const App = () => {
         return (
           <button
             key={category}
-            onClick={() => dispatch(update_filter({ category: category }))}
+            name="category"
+            onClick={(e) => dispatch(update_filter({name: e.target.name, value: e.target.value}))}
           >
             {category}
           </button>
@@ -196,21 +194,32 @@ const App = () => {
       })}
       <input
         type="range"
-        name="rtange"
+        name="price"
         id="range"
         min="0"
         max={highestPrice}
         value={pricechange}
-        onInput={(e) => dispatch(update_filter({ price: e.target.value }))}
+        onInput={(e) => dispatch(update_filter({name: e.target.name, value: e.target.value}))}
       />
       <p>{pricechange}</p>
       <input
         type="text"
-        onChange={(e) => dispatch(update_filter({ search: e.target.value }))}
+        name="search"
+        onChange={(e) => dispatch(update_filter({name: e.target.name, value: e.target.value}))}
       />
       {/*
       <button onClick={clearFilter}>Clear filter</button>
       <p>{filteredProduct.length}</p> */}
+
+      <div>
+        <select name="sort" id="sort" onClick={(e)=>dispatch(update_sorting(e.target.value))}>
+          <option value="ascending">Alphabetically A -Z</option>
+          <option value="descending">Alphabetically Z - A</option>
+          <option value="highest">price High to low </option>
+          <option value="lowest">price Low to High </option>
+        </select>
+      </div>
+
       <table>
         <thead>
           <tr>
